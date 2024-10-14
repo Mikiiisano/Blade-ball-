@@ -1,0 +1,29 @@
+local player = game.Players.LocalPlayer
+local character = player.Character or player.CharacterAdded:Wait()
+local autoParryEnabled = false
+
+local function onBallDetected(ball)
+    if autoParryEnabled then
+        ball:Destroy() -- Ejemplo de cómo manejar la bola
+        print("Parry exitoso!")
+    end
+end
+
+local function toggleAutoParry()
+    autoParryEnabled = not autoParryEnabled
+    print("Auto-parry " .. (autoParryEnabled and "activado" or "desactivado"))
+end
+
+-- Conectar el botón UI
+local uiButton = script.Parent:WaitForChild("AutoParryButton")
+uiButton.MouseButton1Click:Connect(toggleAutoParry)
+
+-- Detección de bolas
+while true do
+    wait(0.1) -- Intervalo de detección
+    for _, obj in ipairs(workspace:GetChildren()) do
+        if obj:IsA("Ball") and (obj.Position - character.PrimaryPart.Position).magnitude < 5 then
+            onBallDetected(obj)
+        end
+    end
+end
